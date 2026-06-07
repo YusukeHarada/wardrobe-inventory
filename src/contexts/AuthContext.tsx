@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import {
   User,
   GoogleAuthProvider,
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   signOut as firebaseSignOut,
@@ -21,20 +22,25 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// iOS Safari は signInWithPopup で sessionStorage が分離されエラーになるため
+// モバイルブラウザは signInWithRedirect を使用する
+function isMobileBrowser(): boolean {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // onAuthStateChanged はユーザー状態の変化を追跡する（loading には影響させない）
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
     });
 
-    // getRedirectResult が完了してから loading を false にする。
-    // これにより「onAuthStateChanged が null で先に発火して loading = false になる」
-    // レース条件を防ぐ。
+    // モバイルのリダイレクト結果を処理する。
+    // getRedirectResult が完了してから loading を false にすることで
+    // onAuthStateChanged(null) が先に発火するレース条件を防ぐ。
     getRedirectResult(auth)
       .catch((error: Error) => {
         setAuthError(error.message);
@@ -48,7 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
+    if (isMobileBrowser()) {
+      // モバイル: ITP による sessionStorage 分離を回避するためリダイレクト方式
+      await signInWithRedirect(auth, provider);
+    } else {
+      // デスクトップ: ポップアップ方式（ページ遷移なし）
+      await signInWithPopup(auth, provider);
+    }
   }
 
   async function signOut() {
