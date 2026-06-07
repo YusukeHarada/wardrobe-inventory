@@ -13,10 +13,10 @@ export function GoogleSignInButton() {
     setLoading(true);
     setError(null);
     try {
+      // signInWithRedirect はページ遷移するため、この後のコードは実行されない
       await signInWithGoogle();
     } catch {
-      setError('ログインに失敗しました。もう一度お試しください。');
-    } finally {
+      setError('ログインに失敗しました。時間をおいて再度お試しください。');
       setLoading(false);
     }
   }
@@ -48,7 +48,7 @@ export function GoogleSignInButton() {
             fill="#EA4335"
           />
         </svg>
-        {loading ? 'ログイン中...' : 'Googleでログイン'}
+        {loading ? 'Googleへ移動中...' : 'Googleでログイン'}
       </Button>
       {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
     </div>
