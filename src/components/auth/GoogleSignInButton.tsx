@@ -13,10 +13,12 @@ export function GoogleSignInButton() {
     setLoading(true);
     setError(null);
     try {
-      // signInWithRedirect はページ遷移するため、この後のコードは実行されない
+      // signInWithRedirect はページ遷移するため、成功時はこの後のコードは実行されない
       await signInWithGoogle();
-    } catch {
-      setError('ログインに失敗しました。時間をおいて再度お試しください。');
+    } catch (err) {
+      // 実際のFirebaseエラーメッセージを表示する
+      const message = err instanceof Error ? err.message : 'ログインに失敗しました';
+      setError(message);
       setLoading(false);
     }
   }
@@ -50,7 +52,7 @@ export function GoogleSignInButton() {
         </svg>
         {loading ? 'Googleへ移動中...' : 'Googleでログイン'}
       </Button>
-      {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-center text-xs text-red-500 break-all">{error}</p>}
     </div>
   );
 }
