@@ -21,10 +21,18 @@ const defaultFilter: FilterState = {
 
 export default function ItemsPage() {
   const { user } = useAuth();
-  const { items, loading } = useItems(user?.uid ?? null);
+  const { items, loading, error } = useItems(user?.uid ?? null);
   const [filter, setFilter] = useState<FilterState>(defaultFilter);
 
   if (loading) return <LoadingSpinner fullPage />;
+
+  if (error) {
+    return (
+      <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+        データの取得に失敗しました: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div>

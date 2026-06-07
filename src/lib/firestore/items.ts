@@ -7,7 +7,6 @@ import {
   getDoc,
   query,
   where,
-  orderBy,
   onSnapshot,
   serverTimestamp,
   QueryDocumentSnapshot,
@@ -51,10 +50,18 @@ export function subscribeItems(
 ) {
   const q = query(
     collection(db, 'items').withConverter(itemConverter),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
+    where('userId', '==', userId)
   );
-  return onSnapshot(q, (snap) => onChange(snap.docs.map((d) => d.data())), onError);
+  return onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs
+        .map((d) => d.data())
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      onChange(items);
+    },
+    onError
+  );
 }
 
 export async function getItem(itemId: string): Promise<Item | null> {
