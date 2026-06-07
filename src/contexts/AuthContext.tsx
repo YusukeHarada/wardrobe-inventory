@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import {
   User,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from 'firebase/auth';
@@ -24,6 +25,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Google リダイレクト後の認証結果を処理する
+    getRedirectResult(auth).catch(() => {});
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
@@ -33,7 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    // signInWithPopup は iOS Safari で sessionStorage が分離されブロックされるため
+    // signInWithRedirect を使用する
+    await signInWithRedirect(auth, provider);
   }
 
   async function signOut() {
