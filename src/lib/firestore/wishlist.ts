@@ -6,7 +6,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
   onSnapshot,
   serverTimestamp,
   QueryDocumentSnapshot,
@@ -45,10 +44,18 @@ export function subscribeWishlist(
 ) {
   const q = query(
     collection(db, 'wishlist').withConverter(wishlistConverter),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
+    where('userId', '==', userId)
   );
-  return onSnapshot(q, (snap) => onChange(snap.docs.map((d) => d.data())), onError);
+  return onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs
+        .map((d) => d.data())
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      onChange(items);
+    },
+    onError
+  );
 }
 
 export async function createWishlistItem(
