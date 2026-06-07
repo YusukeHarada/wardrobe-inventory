@@ -14,6 +14,7 @@ import { auth } from '@/lib/firebase';
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  authError: string | null;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -23,22 +24,30 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Google リダイレクト後の認証結果を処理する
-    getRedirectResult(auth).catch(() => {});
-
+    // onAuthStateChanged はユーザー状態の変化を追跡する（loading には影響させない）
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
-      setLoading(false);
     });
+
+    // getRedirectResult が完了してから loading を false にする。
+    // これにより「onAuthStateChanged が null で先に発火して loading = false になる」
+    // レース条件を防ぐ。
+    getRedirectResult(auth)
+      .catch((error: Error) => {
+        setAuthError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
     return unsubscribe;
   }, []);
 
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    // signInWithPopup は iOS Safari で sessionStorage が分離されブロックされるため
-    // signInWithRedirect を使用する
     await signInWithRedirect(auth, provider);
   }
 
@@ -47,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, authError, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );

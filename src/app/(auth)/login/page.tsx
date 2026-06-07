@@ -7,7 +7,7 @@ import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function LoginPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, authError } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,6 +29,12 @@ export default function LoginPage() {
           <p className="text-sm text-slate-600 text-center mb-6">
             Googleアカウントでログインしてください
           </p>
+          {authError && (
+            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700 break-all">
+              <p className="font-medium mb-1">ログインエラー</p>
+              <p>{authError}</p>
+            </div>
+          )}
           <GoogleSignInButton />
         </div>
         <p className="mt-4 text-center text-xs text-slate-400">
