@@ -43,7 +43,7 @@ export function NavBar() {
               href={item.href}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                pathname.startsWith(item.href)
+                pathname === item.href || pathname.startsWith(item.href + '/')
                   ? 'bg-slate-100 text-slate-900'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               )}
@@ -64,7 +64,7 @@ export function NavBar() {
               href={item.href}
               className={cn(
                 'flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors',
-                pathname.startsWith(item.href)
+                pathname === item.href || pathname.startsWith(item.href + '/')
                   ? 'text-slate-900'
                   : 'text-slate-400'
               )}

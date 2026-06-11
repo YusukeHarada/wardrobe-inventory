@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -40,6 +39,7 @@ export function TransactionForm({
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -55,6 +55,7 @@ export function TransactionForm({
 
   async function handleFormSubmit(values: FormValues) {
     if (values.type === 'disposal' && values.quantity > maxDisposalQuantity) {
+      setError('quantity', { message: `廃棄数は残数（${maxDisposalQuantity}）以下にしてください` });
       return;
     }
     await onSubmit(values.type, values.quantity, values.transactionDate, values.memo);

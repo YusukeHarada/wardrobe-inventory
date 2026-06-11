@@ -1,7 +1,9 @@
 import {
   collection,
+  collectionGroup,
   doc,
   query,
+  where,
   orderBy,
   onSnapshot,
   serverTimestamp,
@@ -34,6 +36,18 @@ const txConverter: FirestoreDataConverter<Transaction> = {
     };
   },
 };
+
+export function subscribeAllUserTransactions(
+  userId: string,
+  onChange: (txs: Transaction[]) => void,
+  onError: (err: Error) => void
+) {
+  const q = query(
+    collectionGroup(db, 'transactions').withConverter(txConverter),
+    where('userId', '==', userId)
+  );
+  return onSnapshot(q, (snap) => onChange(snap.docs.map((d) => d.data())), onError);
+}
 
 export function subscribeTransactions(
   itemId: string,

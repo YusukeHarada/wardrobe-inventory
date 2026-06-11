@@ -20,18 +20,25 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { item, loading } = useItem(id);
+  const { item, loading, error: itemError } = useItem(id);
   const { transactions } = useTransactions(id);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (loading) return <LoadingSpinner fullPage />;
+  if (itemError) return <p className="text-red-500">読み込みに失敗しました</p>;
   if (!item) return <p className="text-slate-500">アイテムが見つかりません</p>;
 
   const age = ageInMonths(item.purchaseDate);
 
   async function handleDelete() {
-    await deleteItem(id);
-    router.push('/items');
+    try {
+      await deleteItem(id);
+      router.push('/items');
+    } catch {
+      setDeleteError('削除に失敗しました。もう一度お試しください。');
+      setConfirmDelete(false);
+    }
   }
 
   return (
@@ -52,6 +59,8 @@ export default function ItemDetailPage() {
           </div>
         }
       />
+
+      {deleteError && <p className="mb-4 text-sm text-red-500">{deleteError}</p>}
 
       <div className="space-y-4 max-w-lg">
         <Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useItem } from '@/hooks/useItem';
 import { createTransaction } from '@/lib/firestore/transactions';
@@ -16,6 +16,7 @@ function TransactionFormWrapper() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { item, loading } = useItem(id);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const defaultType = (searchParams.get('type') as TransactionType) ?? 'purchase';
 
@@ -29,14 +30,20 @@ function TransactionFormWrapper() {
     memo: string
   ) {
     if (!user) return;
-    await createTransaction(id, user.uid, type, quantity, transactionDate, memo);
-    router.push(`/items/${id}`);
+    try {
+      await createTransaction(id, user.uid, type, quantity, transactionDate, memo);
+      router.push(`/items/${id}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '登録に失敗しました。もう一度お試しください。';
+      setSubmitError(message);
+    }
   }
 
   return (
     <div>
       <PageHeader title={item.name} description="購入 / 廃棄の登録" />
       <div className="max-w-sm">
+        {submitError && <p className="mb-4 text-sm text-red-500">{submitError}</p>}
         <TransactionForm
           maxDisposalQuantity={item.remainingQuantity}
           defaultType={defaultType}

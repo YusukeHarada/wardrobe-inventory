@@ -38,7 +38,7 @@ export function WishlistCard({ item, onDelete }: WishlistCardProps) {
         {item.memo && <p className="text-xs text-slate-500 mb-3">{item.memo}</p>}
 
         <Link
-          href={`/items/new?from=wishlist&name=${encodeURIComponent(item.name)}&category=${encodeURIComponent(item.category)}&price=${item.expectedPrice}`}
+          href={`/items/new?name=${encodeURIComponent(item.name)}&category=${encodeURIComponent(item.category)}&price=${item.expectedPrice}`}
         >
           <Button variant="secondary" size="sm" className="w-full">
             購入済みとして登録

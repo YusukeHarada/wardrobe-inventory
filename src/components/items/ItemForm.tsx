@@ -23,19 +23,19 @@ const schema = z
     remainingQuantity: z.number().min(0).optional(),
     memo: z.string().max(500),
   })
-  .refine(
-    (data) => {
-      if (data.managementType === 'lot') {
-        return (
-          data.quantity !== undefined &&
-          data.remainingQuantity !== undefined &&
-          data.remainingQuantity <= data.quantity
-        );
+  .superRefine((data, ctx) => {
+    if (data.managementType === 'lot') {
+      if (data.quantity === undefined) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: '総数を入力してください', path: ['quantity'] });
       }
-      return true;
-    },
-    { message: '残数は総数以下である必要があります', path: ['remainingQuantity'] }
-  );
+      if (data.remainingQuantity === undefined) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: '残数を入力してください', path: ['remainingQuantity'] });
+      }
+      if (data.quantity !== undefined && data.remainingQuantity !== undefined && data.remainingQuantity > data.quantity) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: '残数は総数以下である必要があります', path: ['remainingQuantity'] });
+      }
+    }
+  });
 
 type FormValues = z.infer<typeof schema>;
 

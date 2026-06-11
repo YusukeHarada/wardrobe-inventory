@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useItems } from '@/hooks/useItems';
+import { useAllUserTransactions } from '@/hooks/useAllUserTransactions';
 import { useStatistics } from '@/hooks/useStatistics';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { CategoryBreakdownChart } from '@/components/statistics/CategoryBreakdownChart';
@@ -13,11 +14,12 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function StatisticsPage() {
   const { user } = useAuth();
-  const { items, loading } = useItems(user?.uid ?? null);
-  const { categoryStats, monthlyExpenses, annualExpenses } = useStatistics(items, []);
+  const { items, loading: itemsLoading } = useItems(user?.uid ?? null);
+  const { transactions, loading: txLoading } = useAllUserTransactions(user?.uid ?? null);
+  const { categoryStats, monthlyExpenses, annualExpenses } = useStatistics(items, transactions);
   const [categoryMode, setCategoryMode] = useState<'count' | 'value'>('count');
 
-  if (loading) return <LoadingSpinner fullPage />;
+  if (itemsLoading || txLoading) return <LoadingSpinner fullPage />;
 
   const totalValue = items.reduce((sum, item) => sum + item.purchasePrice, 0);
 
