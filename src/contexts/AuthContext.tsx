@@ -34,10 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signInWithGoogle() {
+    setAuthError(null);
     const provider = new GoogleAuthProvider();
     // signInWithPopup はポップアップ + postMessage で通信するため sessionStorage 不使用。
     // signInWithRedirect は ITP により sessionStorage が消去され iOS Safari で失敗する。
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'ログインに失敗しました';
+      setAuthError(message);
+      throw err;
+    }
   }
 
   async function signOut() {

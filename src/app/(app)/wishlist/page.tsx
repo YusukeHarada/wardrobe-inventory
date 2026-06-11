@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Plus, Heart } from 'lucide-react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useWishlist } from '@/hooks/useWishlist';
 import { deleteWishlistItem } from '@/lib/firestore/wishlist';
@@ -14,15 +15,21 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 export default function WishlistPage() {
   const { user } = useAuth();
   const { wishlist, loading } = useWishlist(user?.uid ?? null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (loading) return <LoadingSpinner fullPage />;
 
   async function handleDelete(id: string) {
-    await deleteWishlistItem(id);
+    try {
+      await deleteWishlistItem(id);
+    } catch {
+      setDeleteError('削除に失敗しました。もう一度お試しください。');
+    }
   }
 
   return (
     <div>
+      {deleteError && <p className="mb-4 text-sm text-red-500">{deleteError}</p>}
       <PageHeader
         title="ほしい物リスト"
         description={`${wishlist.length}件`}

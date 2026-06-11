@@ -15,8 +15,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
 
-  if (loading) return <LoadingSpinner fullPage />;
-  if (!user) return null;
+  if (loading || !user) return <LoadingSpinner fullPage />;
 
   return <>{children}</>;
 }

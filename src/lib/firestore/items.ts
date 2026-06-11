@@ -5,10 +5,12 @@ import {
   updateDoc,
   deleteDoc,
   getDoc,
+  getDocs,
   query,
   where,
   onSnapshot,
   serverTimestamp,
+  writeBatch,
   QueryDocumentSnapshot,
   Timestamp,
   FirestoreDataConverter,
@@ -88,5 +90,12 @@ export async function updateItem(itemId: string, data: Partial<ItemFormData>): P
 }
 
 export async function deleteItem(itemId: string): Promise<void> {
+  const txColRef = collection(db, 'items', itemId, 'transactions');
+  const txSnap = await getDocs(txColRef);
+  if (!txSnap.empty) {
+    const batch = writeBatch(db);
+    txSnap.docs.forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
   await deleteDoc(doc(db, 'items', itemId));
 }
