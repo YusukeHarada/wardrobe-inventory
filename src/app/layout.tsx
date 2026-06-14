@@ -11,6 +11,11 @@ const geist = Geist({
 export const metadata: Metadata = {
   title: 'Wardrobe Inventory',
   description: 'ワードローブ資産管理アプリ',
+  appleWebApp: {
+    capable: true,
+    title: 'Wardrobe',
+    statusBarStyle: 'default',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
