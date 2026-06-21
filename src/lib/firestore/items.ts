@@ -16,7 +16,7 @@ import {
   FirestoreDataConverter,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Item, ItemFormData } from '@/types/item';
+import { Item, ItemFormData, Season } from '@/types/item';
 
 function toISO(ts: unknown): string {
   if (ts instanceof Timestamp) return ts.toDate().toISOString();
@@ -33,6 +33,7 @@ const itemConverter: FirestoreDataConverter<Item> = {
       name: d.name,
       category: d.category,
       managementType: d.managementType,
+      season: d.season ?? 'all_season',
       purchaseDate: d.purchaseDate,
       purchasePrice: d.purchasePrice,
       expectedLifeMonths: d.expectedLifeMonths,
@@ -87,6 +88,14 @@ export async function updateItem(itemId: string, data: Partial<ItemFormData>): P
     ...data,
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function batchUpdateItemsSeason(itemIds: string[], season: Season): Promise<void> {
+  const batch = writeBatch(db);
+  itemIds.forEach((id) => {
+    batch.update(doc(db, 'items', id), { season, updatedAt: serverTimestamp() });
+  });
+  await batch.commit();
 }
 
 export async function deleteItem(itemId: string): Promise<void> {

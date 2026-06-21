@@ -1,4 +1,4 @@
-import { Category, ManagementType } from '@/types/item';
+import { Category, ManagementType, Season } from '@/types/item';
 
 export const CATEGORIES: Category[] = [
   '衣類',
@@ -18,6 +18,18 @@ export const MANAGEMENT_TYPES: { value: ManagementType; label: string }[] = [
 export const MANAGEMENT_TYPE_LABELS: Record<ManagementType, string> = {
   individual: '個体管理',
   lot: 'ロット管理',
+};
+
+export const SEASONS: { value: Season; label: string }[] = [
+  { value: 'spring_summer', label: '春夏' },
+  { value: 'fall_winter', label: '秋冬' },
+  { value: 'all_season', label: 'オールシーズン' },
+];
+
+export const SEASON_LABELS: Record<Season, string> = {
+  spring_summer: '春夏',
+  fall_winter: '秋冬',
+  all_season: 'オールシーズン',
 };
 
 export const LOT_LOW_STOCK_THRESHOLD = 0.25;

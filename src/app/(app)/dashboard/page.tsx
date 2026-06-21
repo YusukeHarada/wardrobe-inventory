@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { Package, AlertTriangle, ShoppingCart, Trash2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useItems } from '@/hooks/useItems';
+import { useSeasonFilteredItems } from '@/hooks/useSeasonFilteredItems';
 import { useReplacements } from '@/hooks/useReplacements';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth();
-  const { items, loading } = useItems(user?.uid ?? null);
+  const { items, loading } = useSeasonFilteredItems(user?.uid ?? null);
   const replacements = useReplacements(items);
   const router = useRouter();
 

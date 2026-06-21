@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useItems } from '@/hooks/useItems';
+import { useSeasonFilteredItems } from '@/hooks/useSeasonFilteredItems';
 import { useAllUserTransactions } from '@/hooks/useAllUserTransactions';
 import { useStatistics } from '@/hooks/useStatistics';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -14,7 +14,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function StatisticsPage() {
   const { user } = useAuth();
-  const { items, loading: itemsLoading } = useItems(user?.uid ?? null);
+  const { items, loading: itemsLoading } = useSeasonFilteredItems(user?.uid ?? null);
   const { transactions, loading: txLoading } = useAllUserTransactions(user?.uid ?? null);
   const { categoryStats, monthlyExpenses, annualExpenses } = useStatistics(items, transactions);
   const [categoryMode, setCategoryMode] = useState<'count' | 'value'>('count');

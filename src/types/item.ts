@@ -9,12 +9,15 @@ export type Category =
 
 export type ManagementType = 'individual' | 'lot';
 
+export type Season = 'spring_summer' | 'fall_winter' | 'all_season';
+
 export interface Item {
   id: string;
   userId: string;
   name: string;
   category: Category;
   managementType: ManagementType;
+  season: Season;
   purchaseDate: string;
   purchasePrice: number;
   expectedLifeMonths: number;

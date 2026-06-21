@@ -9,6 +9,7 @@ const makeItem = (overrides: Partial<Item> = {}): Item => ({
   name: 'Test',
   category: '衣類',
   managementType: 'individual',
+  season: 'all_season',
   purchaseDate: '2026-01-01',
   purchasePrice: 10000,
   expectedLifeMonths: 12,
