@@ -8,6 +8,7 @@ const baseItem: Item = {
   name: 'Test',
   category: '衣類',
   managementType: 'individual',
+  season: 'all_season',
   purchaseDate: '2024-01-01',
   purchasePrice: 10000,
   expectedLifeMonths: 12,

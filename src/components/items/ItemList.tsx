@@ -9,9 +9,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 interface ItemListProps {
   items: Item[];
   filter: FilterState;
+  selectMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
 }
 
-export function ItemList({ items, filter }: ItemListProps) {
+export function ItemList({ items, filter, selectMode, selectedIds, onToggleSelect }: ItemListProps) {
   const filtered = useMemo(() => {
     let result = [...items];
 
@@ -66,7 +69,13 @@ export function ItemList({ items, filter }: ItemListProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {filtered.map((item) => (
-        <ItemCard key={item.id} item={item} />
+        <ItemCard
+          key={item.id}
+          item={item}
+          selectMode={selectMode}
+          selected={selectedIds?.has(item.id)}
+          onToggleSelect={onToggleSelect}
+        />
       ))}
     </div>
   );

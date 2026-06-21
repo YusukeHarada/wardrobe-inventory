@@ -10,6 +10,7 @@ import {
   BarChart2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { SeasonToggle } from './SeasonToggle';
 
 interface NavItem {
   href: string;
@@ -52,6 +53,10 @@ export function NavBar() {
               {item.label}
             </Link>
           ))}
+        </div>
+        <div className="mt-auto pt-4 border-t border-slate-100">
+          <p className="text-xs text-slate-400 mb-2 px-1">表示シーズン</p>
+          <SeasonToggle />
         </div>
       </nav>
 

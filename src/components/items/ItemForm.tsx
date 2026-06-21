@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Item, ItemFormData } from '@/types/item';
-import { CATEGORIES, MANAGEMENT_TYPES, EXPECTED_LIFE_PRESETS } from '@/lib/constants';
+import { CATEGORIES, MANAGEMENT_TYPES, EXPECTED_LIFE_PRESETS, SEASONS } from '@/lib/constants';
 import { todayISO } from '@/lib/utils/date';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -16,6 +16,7 @@ const schema = z
     name: z.string().min(1, '名前を入力してください').max(100),
     category: z.enum(['衣類', '靴', '靴下', '下着', 'バッグ', '帽子', 'その他']),
     managementType: z.enum(['individual', 'lot']),
+    season: z.enum(['spring_summer', 'fall_winter', 'all_season']),
     purchaseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '日付を入力してください'),
     purchasePrice: z.number({ error: '数値を入力してください' }).min(0, '0以上の値を入力してください'),
     expectedLifeMonths: z.number({ error: '数値を入力してください' }).min(0).max(600),
@@ -58,6 +59,7 @@ export function ItemForm({ defaultValues, onSubmit, submitLabel = '登録' }: It
       name: defaultValues?.name ?? '',
       category: defaultValues?.category ?? '衣類',
       managementType: defaultValues?.managementType ?? 'individual',
+      season: defaultValues?.season ?? 'all_season',
       purchaseDate: defaultValues?.purchaseDate ?? todayISO(),
       purchasePrice: defaultValues?.purchasePrice ?? 0,
       expectedLifeMonths: defaultValues?.expectedLifeMonths ?? 12,
@@ -68,12 +70,14 @@ export function ItemForm({ defaultValues, onSubmit, submitLabel = '登録' }: It
   });
 
   const managementType = watch('managementType');
+  const season = watch('season');
 
   async function handleFormSubmit(values: FormValues) {
     const data: ItemFormData = {
       name: values.name,
       category: values.category,
       managementType: values.managementType,
+      season: values.season,
       purchaseDate: values.purchaseDate,
       purchasePrice: values.purchasePrice,
       expectedLifeMonths: values.expectedLifeMonths,
@@ -118,6 +122,26 @@ export function ItemForm({ defaultValues, onSubmit, submitLabel = '登録' }: It
               }`}
             >
               {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">シーズン</label>
+        <div className="flex rounded-lg border border-slate-300 overflow-hidden">
+          {SEASONS.map((s) => (
+            <button
+              key={s.value}
+              type="button"
+              onClick={() => setValue('season', s.value)}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                season === s.value
+                  ? 'bg-slate-700 text-white'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {s.label}
             </button>
           ))}
         </div>

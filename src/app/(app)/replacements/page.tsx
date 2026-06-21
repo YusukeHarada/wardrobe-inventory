@@ -2,7 +2,7 @@
 
 import { AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useItems } from '@/hooks/useItems';
+import { useSeasonFilteredItems } from '@/hooks/useSeasonFilteredItems';
 import { useReplacements } from '@/hooks/useReplacements';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ReplacementCard } from '@/components/replacements/ReplacementCard';
@@ -11,7 +11,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function ReplacementsPage() {
   const { user } = useAuth();
-  const { items, loading } = useItems(user?.uid ?? null);
+  const { items, loading } = useSeasonFilteredItems(user?.uid ?? null);
   const candidates = useReplacements(items);
 
   if (loading) return <LoadingSpinner fullPage />;
