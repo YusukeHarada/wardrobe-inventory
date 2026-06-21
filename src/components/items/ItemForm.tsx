@@ -63,8 +63,8 @@ export function ItemForm({ defaultValues, onSubmit, submitLabel = '登録' }: It
       purchaseDate: defaultValues?.purchaseDate ?? todayISO(),
       purchasePrice: defaultValues?.purchasePrice ?? 0,
       expectedLifeMonths: defaultValues?.expectedLifeMonths ?? 12,
-      quantity: defaultValues?.quantity,
-      remainingQuantity: defaultValues?.remainingQuantity,
+      quantity: defaultValues?.managementType === 'lot' ? defaultValues.quantity : undefined,
+      remainingQuantity: defaultValues?.managementType === 'lot' ? defaultValues.remainingQuantity : undefined,
       memo: defaultValues?.memo ?? '',
     },
   });

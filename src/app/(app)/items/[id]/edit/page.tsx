@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useItem } from '@/hooks/useItem';
